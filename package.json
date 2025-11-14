@@ -8,8 +8,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "format": "biome format --write .",
-    "precommit": "pnpm run format && biome check --write .",
+    "format": "pnpm biome format --write .",
+    "precommit": "pnpm run format && pnpm biome check --write .",
     "lint": "biome lint --write ."
   },
   "author": "InterstellarNetwork",
@@ -19,14 +19,14 @@
     "chalk": "^5.4.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
+    "dotenv": "^17.2.0",
     "express": "^4.21.2",
     "express-basic-auth": "^1.2.1",
-    "mime": "^4.0.7",
+    "mime": "^4.1.0",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4"
+    "@biomejs/biome": "2.2.2"
   },
   "packageManager": "pnpm@9.10.0"
 }

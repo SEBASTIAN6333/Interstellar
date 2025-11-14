@@ -1,34 +1,27 @@
-// t.js
+// tabs.js
 window.addEventListener("load", () => {
   navigator.serviceWorker.register("../sw.js?v=2025-04-15", { scope: "/a/" });
   const form = document.getElementById("fv");
-  const input = document.getElementById("iv");
+  const input = document.getElementById("input");
   if (form && input) {
     form.addEventListener("submit", async event => {
       event.preventDefault();
       const formValue = input.value.trim();
-      const url = isUrl(formValue)
-        ? prependHttps(formValue)
-        : `https://www.google.com/search?q=${formValue}`;
+      const url = isUrl(formValue) ? prependHttps(formValue) : `https://duckduckgo.com/?q=${formValue}`;
       processUrl(url);
     });
   }
   function processUrl(url) {
     sessionStorage.setItem("GoUrl", __uv$config.encodeUrl(url));
     const iframeContainer = document.getElementById("frame-container");
-    const activeIframe = Array.from(iframeContainer.querySelectorAll("iframe")).find(
-      iframe => iframe.classList.contains("active"),
-    );
+    const activeIframe = Array.from(iframeContainer.querySelectorAll("iframe")).find(iframe => iframe.classList.contains("active"));
     activeIframe.src = `/a/${__uv$config.encodeUrl(url)}`;
     activeIframe.dataset.tabUrl = url;
     input.value = url;
     console.log(activeIframe.dataset.tabUrl);
   }
   function isUrl(val = "") {
-    if (
-      /^http(s?):\/\//.test(val) ||
-      (val.includes(".") && val.substr(0, 1) !== " ")
-    ) {
+    if (/^http(s?):\/\//.test(val) || (val.includes(".") && val.substr(0, 1) !== " ")) {
       return true;
     }
     return false;
@@ -53,8 +46,7 @@ document.addEventListener("DOMContentLoaded", event => {
     const newTab = document.createElement("li");
     const tabTitle = document.createElement("span");
     const newIframe = document.createElement("iframe");
-    newIframe.sandbox =
-      "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-orientation-lock allow-presentation allow-storage-access-by-user-activation";
+    newIframe.sandbox = "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-orientation-lock allow-presentation allow-storage-access-by-user-activation";
     // When Top Navigation is not allowed links with the "top" value will be entirely blocked, if we allow Top Navigation it will overwrite the tab, which is obviously not wanted.
     tabTitle.textContent = `New Tab ${tabCounter}`;
     tabTitle.className = "t";
@@ -138,16 +130,12 @@ document.addEventListener("DOMContentLoaded", event => {
       const remainingTabs = Array.from(tabList.querySelectorAll("li"));
       if (remainingTabs.length === 0) {
         tabCounter = 0;
-        document.getElementById("iv").value = "";
+        document.getElementById("input").value = "";
       } else {
-        const nextTabIndex = remainingTabs.findIndex(
-          tab => tab.dataset.tabId !== tabId,
-        );
+        const nextTabIndex = remainingTabs.findIndex(tab => tab.dataset.tabId !== tabId);
         if (nextTabIndex > -1) {
           const nextTabToActivate = remainingTabs[nextTabIndex];
-          const nextIframeToActivate = iframeContainer.querySelector(
-            `[data-tab-id='${nextTabToActivate.dataset.tabId}']`,
-          );
+          const nextIframeToActivate = iframeContainer.querySelector(`[data-tab-id='${nextTabToActivate.dataset.tabId}']`);
           for (const tab of remainingTabs) {
             tab.classList.remove("active");
           }
@@ -211,7 +199,7 @@ document.addEventListener("DOMContentLoaded", event => {
 function reload() {
   const activeIframe = document.querySelector("#frame-container iframe.active");
   if (activeIframe) {
-    // biome-ignore lint/correctness/noSelfAssign:
+    // biome-ignore lint: idk
     activeIframe.src = activeIframe.src;
     Load();
   } else {
@@ -226,9 +214,7 @@ function popout() {
     const newWindow = window.open("about:blank", "_blank");
     if (newWindow) {
       const name = localStorage.getItem("name") || "My Drive - Google Drive";
-      const icon =
-        localStorage.getItem("icon") ||
-        "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png";
+      const icon = localStorage.getItem("icon") || "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png";
       newWindow.document.title = name;
       const link = newWindow.document.createElement("link");
       link.rel = "icon";
@@ -358,28 +344,21 @@ if (navigator.userAgent.includes("Chrome")) {
 }
 function Load() {
   const activeIframe = document.querySelector("#frame-container iframe.active");
-  if (
-    activeIframe &&
-    activeIframe.contentWindow.document.readyState === "complete"
-  ) {
+  if (activeIframe && activeIframe.contentWindow.document.readyState === "complete") {
     const website = activeIframe.contentWindow.document.location.href;
     if (website.includes("/a/")) {
-      const websitePath = website
-        .replace(window.location.origin, "")
-        .replace("/a/", "");
+      const websitePath = website.replace(window.location.origin, "").replace("/a/", "");
       localStorage.setItem("decoded", websitePath);
       const decodedValue = decodeXor(websitePath);
-      document.getElementById("iv").value = decodedValue;
+      document.getElementById("input").value = decodedValue;
     } else if (website.includes("/a/q/")) {
-      const websitePath = website
-        .replace(window.location.origin, "")
-        .replace("/a/q/", "");
+      const websitePath = website.replace(window.location.origin, "").replace("/a/q/", "");
       const decodedValue = decodeXor(websitePath);
       localStorage.setItem("decoded", websitePath);
-      document.getElementById("iv").value = decodedValue;
+      document.getElementById("input").value = decodedValue;
     } else {
       const websitePath = website.replace(window.location.origin, "");
-      document.getElementById("iv").value = websitePath;
+      document.getElementById("input").value = websitePath;
       localStorage.setItem("decoded", websitePath);
     }
   }
@@ -392,9 +371,7 @@ function decodeXor(input) {
   return (
     decodeURIComponent(str)
       .split("")
-      .map((char, ind) =>
-        ind % 2 ? String.fromCharCode(char.charCodeAt(Number.NaN) ^ 2) : char,
-      )
+      .map((char, ind) => (ind % 2 ? String.fromCharCode(char.charCodeAt(Number.NaN) ^ 2) : char))
       .join("") + (search.length ? `?${search.join("?")}` : "")
   );
 }
